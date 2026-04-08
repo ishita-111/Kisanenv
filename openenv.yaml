@@ -1,0 +1,90 @@
+openenv_version: "1.0"
+environment:
+  name: "KisanEnv"
+  version: "1.0.0"
+  description: "Production Agricultural Simulator with NPK, weather dynamics, and multi-factor crop health modeling."
+  
+  observation_space: 
+    type: "json_schema"
+    schema:
+      type: "object"
+      properties:
+        crop_type: {type: "string"}
+        growth_stage: {type: "string"}
+        symptom_description: {type: "string"}
+        weather:
+          type: "object"
+          properties:
+            temperature_c: {type: "number"}
+            humidity_pct: {type: "number"}
+            wind_speed_kmh: {type: "number"}
+            rainfall_today_mm: {type: "number"}
+            forecast:
+              type: "array"
+              items:
+                type: "object"
+                properties:
+                  day: {type: "number"}
+                  temp_c: {type: "number"}
+                  rain_mm: {type: "number"}
+                  humidity_pct: {type: "number"}
+        soil:
+          type: "object"
+          properties:
+            moisture: {type: "number"}
+            nitrogen_ppm_observed: {type: "number"}
+            phosphorus_ppm_observed: {type: "number"}
+            potassium_ppm_observed: {type: "number"}
+            last_tested_step: {type: ["number", "null"]}
+        pest_probability_observed: {type: "number"}
+        market_price_per_qtl: {type: "number"}
+        market_trend_observed: {type: "string"}
+        budget_remaining_inr: {type: "number"}
+        yield_estimate_pct: {type: "number"}
+        days_to_harvest: {type: "number"}
+        day_of_season: {type: "number"}
+        season_day_total: {type: "number"}
+        active_alerts:
+          type: "array"
+          items: {type: "string"}
+        previous_actions:
+          type: "array"
+          items: {type: "string"}
+        step_number: {type: "number"}
+        task_id: {type: "string"}
+
+  action_space:
+    type: "json_schema"
+    schema:
+      type: "object"
+      properties:
+        action_type: 
+          type: "string"
+          enum: [
+            "spray_pesticide", "spray_fungicide", "apply_fertilizer", 
+            "irrigate", "harvest_now", "wait_observe", "sell_crop", 
+            "request_soil_test", "consult_market", "file_insurance_claim"
+          ]
+        target: {type: "string"}
+        dosage_or_amount: {type: "number"}
+        timing: 
+          type: "string"
+          enum: ["immediate", "morning", "evening"]
+        reasoning: {type: "string"}
+      required: ["action_type"]
+
+tasks:
+  - id: "task_1_easy"
+    name: "Pest or Deficiency"
+  - id: "task_2_medium"
+    name: "Cotton Season Management"
+  - id: "task_3_hard"
+    name: "Crisis Navigation"
+
+endpoints:
+  reset: "/reset"
+  step: "/step"
+  state: "/state"
+  tasks: "/tasks"
+  grader: "/grader"
+  baseline: "/baseline"
